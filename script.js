@@ -41,7 +41,7 @@ function displayMovies(movieData) {
  * @param {string from the input} searchTerm
  */
 async function loadMovies(searchTerm) {
-  const url = `http://www.omdbapi.com/?s=${searchTerm}&apikey=f38d00be`;
+  const url = `https://www.omdbapi.com/?s=${searchTerm}&apikey=f38d00be`;
   const res = await fetch(`${url}`);
   const data = await res.json();
   if (data.Response == "True") {
@@ -109,7 +109,7 @@ function loadMovieDetails(elementClass) {
   moviesList.forEach((item) => {
     item.addEventListener("click", async function (e) {
       const result = await fetch(
-        `http://www.omdbapi.com/?i=${item.dataset.id}&apikey=f38d00be` // Can be optimized
+        `https://www.omdbapi.com/?i=${item.dataset.id}&apikey=f38d00be` // Can be optimized
       );
       const movieDetail = await result.json();
       if (
