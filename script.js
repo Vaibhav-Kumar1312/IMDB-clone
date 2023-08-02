@@ -9,57 +9,10 @@ const linkFavourites = document.querySelector("#favourites-link");
 const favIcon = document.querySelector(".favouritesIcon");
 let movieWishlists = [];
 
-async function loadMovies(searchTerm) {
-  const url = `http://www.omdbapi.com/?s=${searchTerm}&apikey=f38d00be`;
-  const res = await fetch(`${url}`);
-  const data = await res.json();
-  //   console.log(data);
-  if (data.Response == "True") {
-    displayMovies(data.Search);
-    console.log(data.Search);
-  }
-}
-
-function findMovies() {
-  let searchTerm = movieSearchBar.value.trim();
-  console.log(searchTerm);
-  if (searchTerm.length > 0) {
-    searchList.classList.remove("hidden");
-    loadMovies(searchTerm);
-  } else {
-    searchList.classList.add("hidden");
-  }
-}
-document.addEventListener("keyup", findMovies);
-
-function removeMovie(dataid) {
-  let index = movieWishlists.findIndex((item) => item.imdbID === dataid);
-  movieWishlists.splice(index, 1);
-}
-
-function toggleWishlist(ele, movieDetail) {
-  // ele.classList.toggle("bi-bookmark-heart");
-  // ele.classList.toggle("bi-bookmark-heart-fill");
-
-  if (ele.className === "bi bi-bookmark-heart") {
-    ele.classList.remove("bi-bookmark-heart");
-    ele.classList.add("bi-bookmark-heart-fill");
-    let fav = {
-      title: movieDetail.Title,
-      poster: movieDetail.Poster,
-      imdbID: movieDetail.imdbID,
-      isFavourite: true,
-    };
-    movieWishlists.push(fav);
-    addToFavourites();
-  } else {
-    ele.classList.remove("bi-bookmark-heart-fill");
-    ele.classList.add("bi-bookmark-heart");
-    removeMovie(movieDetail.imdbID);
-    addToFavourites();
-  }
-}
-
+/**
+ * Displays the search list
+ * @param {movie data to be displayed} movieData
+ */
 function displayMovies(movieData) {
   searchList.innerHTML = "";
   movieData.forEach((movie) => {
@@ -83,9 +36,76 @@ function displayMovies(movieData) {
   loadMovieDetails(".search-list-item");
 }
 
+/**
+ * Fetch the movie list related to serach term
+ * @param {string from the input} searchTerm
+ */
+async function loadMovies(searchTerm) {
+  const url = `http://www.omdbapi.com/?s=${searchTerm}&apikey=f38d00be`;
+  const res = await fetch(`${url}`);
+  const data = await res.json();
+  if (data.Response == "True") {
+    displayMovies(data.Search);
+  }
+}
+
+/**
+ * Gets the value from input bar and pass the string to loadMovies
+ */
+function findMovies() {
+  let searchTerm = movieSearchBar.value.trim();
+  if (searchTerm.length > 0) {
+    searchList.classList.remove("hidden");
+    loadMovies(searchTerm);
+  } else {
+    searchList.classList.add("hidden");
+  }
+}
+// Runs when key is pressed
+document.addEventListener("keyup", findMovies);
+
+/**
+ * Remove the movie object form the movieWishliists array
+ * @param {uniqueID the find the object} dataid
+ */
+function removeMovie(dataid) {
+  let index = movieWishlists.findIndex((item) => item.imdbID === dataid);
+  movieWishlists.splice(index, 1);
+}
+
+/**
+ * Toggle the favourite button and adds the clicked object to
+ * movieWishlists array
+ * @param {DOM element} ele
+ * @param {movie details object} movieDetail
+ */
+function toggleWishlist(ele, movieDetail) {
+  if (ele.className === "bi bi-bookmark-heart") {
+    ele.classList.remove("bi-bookmark-heart");
+    ele.classList.add("bi-bookmark-heart-fill");
+    let fav = {
+      title: movieDetail.Title,
+      poster: movieDetail.Poster,
+      imdbID: movieDetail.imdbID,
+      isFavourite: true,
+    };
+    movieWishlists.push(fav);
+    addToFavourites();
+  } else {
+    ele.classList.remove("bi-bookmark-heart-fill");
+    ele.classList.add("bi-bookmark-heart");
+    removeMovie(movieDetail.imdbID);
+    addToFavourites();
+  }
+}
+
+/**
+ * Gets the detailed movie data from the api and adds a click event
+ * to display movie details
+ * @param {class of DOM element on which we have to handle click} elementClass
+ */
 function loadMovieDetails(elementClass) {
   const moviesList = document.querySelectorAll(elementClass);
-  console.log(moviesList);
   moviesList.forEach((item) => {
     item.addEventListener("click", async function (e) {
       const result = await fetch(
@@ -97,8 +117,6 @@ function loadMovieDetails(elementClass) {
         e.target.className === "bi bi-bookmark-heart"
       ) {
         toggleWishlist(e.target, movieDetail);
-        console.log(movieWishlists);
-        // console.log(movieDetail);
         return;
       }
       movieSearchBar.value = "";
@@ -106,7 +124,10 @@ function loadMovieDetails(elementClass) {
     });
   });
 }
-
+/**
+ * Displays the detailed movie data
+ * @param {Ddetailed movie object} detail
+ */
 function displayMovieDetails(detail) {
   searchContainer.classList.add("hidden");
   favouritesContainer.classList.add("hidden");
@@ -138,6 +159,9 @@ function displayMovieDetails(detail) {
             `;
 }
 
+/**
+ * Add the clicked movie to favourites in th DOM
+ */
 function addToFavourites() {
   favouritesContainer.innerHTML = "";
   movieWishlists.forEach(function (item) {
@@ -161,10 +185,13 @@ function addToFavourites() {
   loadMovieDetails(".fav-movie");
 }
 
+/**
+ * Displays the favourites list
+ */
 function displayFavourites() {
   favouritesContainer.classList.remove("hidden");
   searchContainer.classList.add("hidden");
   movieDetailContainer.classList.add("hidden");
 }
-
+// click event on favourites in navigation bar
 linkFavourites.addEventListener("click", displayFavourites);
