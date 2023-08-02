@@ -6,7 +6,7 @@ const searchList = document.querySelector(".search-list");
 const movieDetailContainer = document.querySelector(".result-grid");
 const favouritesContainer = document.querySelector(".favourites-container");
 const linkFavourites = document.querySelector("#favourites-link");
-const favIcon = document.querySelector(".favouritesIcon");
+const favIcon = document.querySelector(".favourites-icon");
 let movieWishlists = [];
 
 /**
@@ -27,7 +27,7 @@ function displayMovies(movieData) {
         <h3>${movie.Title}</h3>
         <p>${movie.Year}</p>
       </div>
-      <div class="favouritesIcon">
+      <div class="favourites-icon">
         <i class="bi bi-bookmark-heart"></i>
       </div>
     </div>`;
@@ -109,7 +109,7 @@ function loadMovieDetails(elementClass) {
   moviesList.forEach((item) => {
     item.addEventListener("click", async function (e) {
       const result = await fetch(
-        `http://www.omdbapi.com/?i=${item.dataset.id}&apikey=f38d00be`
+        `http://www.omdbapi.com/?i=${item.dataset.id}&apikey=f38d00be` // Can be optimized
       );
       const movieDetail = await result.json();
       if (
@@ -134,29 +134,29 @@ function displayMovieDetails(detail) {
   movieDetailContainer.classList.remove("hidden");
   movieDetailContainer.innerHTML = `
         <div class="movie-poster">
-            <img src="${
-              detail.Poster === "N/A" ? "image_not_found.png" : detail.Poster
-            }" alt="movie poster" />
-            </div>
-            <div class="movie-info">
-            <h3 class="movie-title">${detail.Title}</h3>
-            <ul class="movie-misc-info">
+          <img src="${
+            detail.Poster === "N/A" ? "image_not_found.png" : detail.Poster
+          }" alt="movie poster" />
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-title">${detail.Title}</h3>
+          <ul class="movie-misc-info">
             <li class="year">Year: ${detail.Year}</li>
-                <li class="rated">Ratings: ${detail.Rated}</li>
-                <li class="released">Released: ${detail.Released}</li>
-            </ul>
-            <p class="genre"><b>Genre:</b>${detail.Genre}</p>
-            <p class="writer">
-                <b>Writer:</b>${detail.Writer}
-                </p>
-            <p class="actors">
+            <li class="rated">IMDB: ${detail.imdbRating}</li>
+            <li class="released">Released: ${detail.Released}</li>
+          </ul>
+          <p class="genre"><b>Genre:</b>${detail.Genre}</p>
+          <p class="writer">
+            <b>Writer:</b>${detail.Writer}
+          </p>
+          <p class="actors">
             <b>Actors: </b>${detail.Actors}
-            </p>
-            <p class="plot">
-                <b>Plot:</b>${detail.Plot}
-                </p>
-            <p class="language"><b>Language:</b> ${detail.Language}</p>
-            `;
+          </p>
+          <p class="plot">
+            <b>Plot:</b>${detail.Plot}
+          </p>
+          <p class="language"><b>Language:</b> ${detail.Language}</p>
+        <div/>`;
 }
 
 /**
