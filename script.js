@@ -79,10 +79,11 @@ function removeMovie(dataid) {
  * @param {DOM element} ele
  * @param {movie details object} movieDetail
  */
-function toggleWishlist(ele, movieDetail) {
+async function toggleWishlist(ele, dataid) {
   if (ele.className === "bi bi-bookmark-heart") {
     ele.classList.remove("bi-bookmark-heart");
     ele.classList.add("bi-bookmark-heart-fill");
+    const movieDetail = await loadMovieDetails2(dataid);
     let fav = {
       title: movieDetail.Title,
       poster: movieDetail.Poster,
@@ -94,9 +95,17 @@ function toggleWishlist(ele, movieDetail) {
   } else {
     ele.classList.remove("bi-bookmark-heart-fill");
     ele.classList.add("bi-bookmark-heart");
-    removeMovie(movieDetail.imdbID);
+    removeMovie(dataid);
     addToFavourites();
   }
+}
+
+async function loadMovieDetails2(dataid) {
+  const result = await fetch(
+    `https://www.omdbapi.com/?i=${dataid}&apikey=f38d00be`
+  );
+  const movieDetail = await result.json();
+  return movieDetail;
 }
 
 /**
@@ -108,18 +117,16 @@ function loadMovieDetails(elementClass) {
   const moviesList = document.querySelectorAll(elementClass);
   moviesList.forEach((item) => {
     item.addEventListener("click", async function (e) {
-      const result = await fetch(
-        `https://www.omdbapi.com/?i=${item.dataset.id}&apikey=f38d00be` // Can be optimized
-      );
-      const movieDetail = await result.json();
       if (
         e.target.className === "bi bi-bookmark-heart-fill" ||
         e.target.className === "bi bi-bookmark-heart"
       ) {
-        toggleWishlist(e.target, movieDetail);
+        toggleWishlist(e.target, item.dataset.id);
         return;
       }
-      movieSearchBar.value = "";
+      // movieSearchBar.value = "";
+
+      const movieDetail = await loadMovieDetails2(item.dataset.id);
       displayMovieDetails(movieDetail);
     });
   });
